@@ -70,6 +70,16 @@ describe("the address", () => {
     expect(await endpointAddress("https://gw.example/anthropic/v1/messages", "anthropic", cloud)).toBe(
       "https://gw.example/anthropic",
     );
+    expect(await endpointAddress("https://gw.example/openai/v1/responses?x=1", "openai-responses", cloud)).toBe(
+      "https://gw.example/openai/v1",
+    );
+    // Each style cuts only its own path: Chat Completions' stays on a Responses address, and the reverse.
+    expect(await endpointAddress("https://gw.example/v1/chat/completions", "openai-responses", cloud)).toBe(
+      "https://gw.example/v1/chat/completions",
+    );
+    expect(await endpointAddress("https://gw.example/v1/responses", "openai", cloud)).toBe(
+      "https://gw.example/v1/responses",
+    );
   });
 
   test("private addresses: on by default, off on agentes.chat Cloud, the flag wins", () => {

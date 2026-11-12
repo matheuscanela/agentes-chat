@@ -3,8 +3,10 @@ import type { Credential, Model } from "../src/api/types";
 import {
   checksInOrder,
   draftOfEndpoint,
+  ENDPOINT_STYLES,
   emptyEndpointDraft,
   endpointAddressLooksValid,
+  endpointBaseExample,
   endpointModelsOf,
   endpointReady,
   modelUnpriced,
@@ -17,6 +19,18 @@ import {
 import { keyRuns, modelChoices } from "../src/lib/providers";
 
 describe("the endpoint form", () => {
+  test("three APIs to pick from; the Responses one is addressed like Chat Completions, a saved one comes back as it was", () => {
+    expect(ENDPOINT_STYLES).toEqual(["openai", "openai-responses", "anthropic"]);
+    expect(endpointBaseExample("openai-responses")).toBe(endpointBaseExample("openai"));
+    expect(endpointBaseExample("anthropic")).toBe("https://api.example.com/anthropic");
+    const d = draftOfEndpoint("GW", {
+      style: "openai-responses",
+      baseURL: "https://gw.example/openai/v1",
+      models: [{ id: "gpt-x" }],
+    });
+    expect(d.style).toBe("openai-responses");
+  });
+
   test("a model taken off leaves the others as they were", () => {
     const d = withListedModels(emptyEndpointDraft(), [{ id: "a" }, { id: "b" }]);
     expect(withoutModel(d, "a").models.map((m) => m.id)).toEqual(["b"]);

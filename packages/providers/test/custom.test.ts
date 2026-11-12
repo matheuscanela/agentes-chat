@@ -89,10 +89,13 @@ describe("model lists", () => {
       { id: "m1" },
     ]);
     await listEndpointModels({ style: "anthropic", baseURL: "https://gw.example/anthropic" }, "k-123456789", ok);
+    await listEndpointModels({ style: "openai-responses", baseURL: "https://gw.example/v1" }, "k-123456789", ok);
     expect(seen[0]?.url).toBe("https://gw.example/v1/models");
     expect(seen[0]?.headers.get("authorization")).toBe("Bearer k-123456789");
     expect(seen[1]?.url).toBe("https://gw.example/anthropic/v1/models");
     expect(seen[1]?.headers.get("x-api-key")).toBe("k-123456789");
+    expect(seen[2]?.url).toBe("https://gw.example/v1/models");
+    expect(seen[2]?.headers.get("authorization")).toBe("Bearer k-123456789");
     const refused = listEndpointModels({ style: "openai", baseURL: "https://gw.example/v1" }, "k", answer("", 401));
     await expect(refused).rejects.toThrow("the provider answered 401");
     const huge = answer(JSON.stringify({ data: [{ id: "x".repeat(2_100_000) }] }));
@@ -104,6 +107,28 @@ describe("model lists", () => {
 
 const chat = (chunks: Record<string, unknown>[]) =>
   `${chunks.map((c) => `data: ${JSON.stringify({ id: "c1", object: "chat.completion.chunk", created: 1, ...c })}\n\n`).join("")}data: [DONE]\n\n`;
+
+/** An SSE body of Responses API events (the OpenAI SDK reads `sequence_number`), as the endpoint streams them. */
+const responsesSse = (events: Record<string, unknown>[]) =>
+  events.map((e, i) => `event: ${e.type}\ndata: ${JSON.stringify({ ...e, sequence_number: i })}\n\n`).join("");
+
+const responseOf = (extra: Record<string, unknown>) => ({
+  id: "resp_1",
+  object: "response",
+  created_at: 1,
+  model: "gpt-6-sol",
+  status: "completed",
+  incomplete_details: null,
+  output: [],
+  usage: {
+    input_tokens: 12,
+    input_tokens_details: { cached_tokens: 0 },
+    output_tokens: 7,
+    output_tokens_details: { reasoning_tokens: 3 },
+    total_tokens: 19,
+  },
+  ...extra,
+});
 
 describe("calls", () => {
   test("Chat Completions: the endpoint's address and model id, no OpenRouter extras, usage asked, its cost ignored", async () => {
@@ -294,6 +319,99 @@ describe("calls", () => {
     expect(other.body).toContain(
       "The picture is not shown to you: this agent's AI (moonshotai.kimi-k2.5) reads text only",
     );
+  });
+
+  test("Responses API: its own path, the endpoint's model id, tools with no `max_tokens`, text and tool calls back, its cost ignored", async () => {
+    const message = {
+      type: "message",
+      id: "m1",
+      role: "assistant",
+      status: "completed",
+      content: [{ type: "output_text", text: "Looking.", annotations: [] }],
+    };
+    const call = {
+      type: "function_call",
+      id: "fc1",
+      call_id: "call_1",
+      name: "get_time",
+      arguments: '{"zone":"UTC"}',
+      status: "completed",
+    };
+    const { fetcher, requests } = scripted(
+      responsesSse([
+        { type: "response.created", response: responseOf({ status: "in_progress" }) },
+        {
+          type: "response.output_item.added",
+          output_index: 0,
+          item: { ...message, status: "in_progress", content: [] },
+        },
+        {
+          type: "response.content_part.added",
+          item_id: "m1",
+          output_index: 0,
+          content_index: 0,
+          part: { type: "output_text", text: "", annotations: [] },
+        },
+        {
+          type: "response.output_text.delta",
+          item_id: "m1",
+          output_index: 0,
+          content_index: 0,
+          delta: "Looking.",
+          logprobs: [],
+        },
+        { type: "response.output_item.done", output_index: 0, item: message },
+        {
+          type: "response.output_item.added",
+          output_index: 1,
+          item: { ...call, arguments: "", status: "in_progress" },
+        },
+        { type: "response.function_call_arguments.delta", item_id: "fc1", output_index: 1, delta: '{"zone":"UTC"}' },
+        { type: "response.output_item.done", output_index: 1, item: call },
+        { type: "response.completed", response: responseOf({ output: [message, call] }) },
+      ]),
+    );
+    const deltas: string[] = [];
+    const result = await createCustomProvider({ fetch: fetcher, maxRetries: 0 }).stream(
+      {
+        model: customModelId(CRED, "openai.gpt-6.1-sol"),
+        system: "s",
+        messages: [{ role: "user", content: "what time is it?" }],
+        maxTokens: 100,
+        effort: "high",
+        tools: [{ name: "get_time", description: "The time", inputSchema: { type: "object" } }],
+      },
+      {
+        apiKey: "k-123456789",
+        endpoint: { style: "openai-responses", baseURL: "https://gw.example/openai/v1" },
+        onDelta: (d) => deltas.push(d),
+      },
+    );
+    const req = requests[0];
+    expect(req?.url).toBe("https://gw.example/openai/v1/responses");
+    expect(req?.headers.get("authorization")).toBe("Bearer k-123456789");
+    expect(req?.body).toMatchObject({
+      model: "openai.gpt-6.1-sol",
+      instructions: "s",
+      max_output_tokens: 100,
+      store: false,
+      stream: true,
+    });
+    // The Chat Completions parameters some models refuse there are never sent; an endpoint's model has no catalog
+    // entry, so no `reasoning.effort` is made up for it.
+    expect(req?.body.max_tokens).toBeUndefined();
+    expect(req?.body.reasoning).toBeUndefined();
+    expect(((req?.body.tools ?? []) as { name: string }[]).map((t) => t.name)).toEqual(["get_time"]);
+    expect(deltas.join("")).toBe("Looking.");
+    expect(result.text).toBe("Looking.");
+    expect(result.stopReason).toBe("tool_use");
+    expect(result.content).toContainEqual({ type: "tool_use", id: "call_1", name: "get_time", input: { zone: "UTC" } });
+    expect(result.usage.inputTokens).toBe(12);
+    // The full `custom:` id comes back and no cost of the endpoint's own counts.
+    expect(result.model).toBe(customModelId(CRED, "openai.gpt-6.1-sol"));
+    expect(result.costNanoUsd).toBeUndefined();
+    // Anything else on the wire says so: this style never falls back to Chat Completions.
+    expect(requests).toHaveLength(1);
   });
 
   test("tool calls without an index, or with object arguments, stay apart and readable", async () => {

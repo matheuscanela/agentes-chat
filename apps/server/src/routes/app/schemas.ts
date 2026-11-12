@@ -206,7 +206,7 @@ export const EndpointModel = z
   .openapi("EndpointModel");
 
 export const EndpointStyle = z.enum(ENDPOINT_STYLES).openapi("EndpointStyle", {
-  description: "The API the endpoint speaks: OpenAI's Chat Completions or Anthropic's Messages.",
+  description: "The API the endpoint speaks: OpenAI's Chat Completions, OpenAI's Responses or Anthropic's Messages.",
 });
 
 export const EndpointCheck = z

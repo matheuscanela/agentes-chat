@@ -790,8 +790,8 @@ ones a self-hosted instance usually touches:
 **Model keys.** Each organization adds its own keys (Claude, OpenAI, Gemini, DeepSeek, Kimi, Z.ai,
 MiniMax or OpenRouter) in **Settings → AI and usage**, and each agent uses one of them. Usage and cost are recorded per agent.
 
-**Your own models.** **Other provider** there takes any server that speaks OpenAI's Chat Completions or
-Anthropic's Messages: an Ollama, vLLM, LM Studio or LiteLLM next to this server, or a gateway. Give its base
+**Your own models.** **Other provider** there takes any server that speaks OpenAI's Chat Completions, OpenAI's
+Responses (for models that take tools with reasoning only there) or Anthropic's Messages: an Ollama, vLLM, LM Studio or LiteLLM next to this server, or a gateway. Give its base
 address as that API's SDK takes it (`http://localhost:11434/v1` for Ollama), a key if it asks for one, then
 fetch or type its models and, if you like, their prices: each model gets one test call that checks it can use
 tools. A model without prices costs nothing in budgets (its tokens are still counted). Private addresses and

@@ -79,6 +79,33 @@ describe("Outro provedor in Settings › Chaves de IA", () => {
     return { add, api };
   };
 
+  test("the API is picked among three: Responses is sent as its own style when the models are fetched", async () => {
+    const state = seedState({ endpointList: { baseURL: "https://gw.example/openai/v1", models: [{ id: "gpt-x" }] } });
+    await renderApp(`/org/${ORG_ID}/settings/keys`, { api: createFakeApi(state) });
+    await settle(5);
+    const keys = screen().getByRole("region", { name: "Chaves de provedor" });
+    await click(within(keys).getByRole("button", { name: "Adicionar chave" }));
+    const add = screen().getByRole("dialog", { name: "Adicionar chave de API" });
+    await pick(within(add).getByRole("combobox", { name: "Provedor" }), /Outro provedor/);
+
+    const styles = within(add).getAllByRole("radio");
+    expect(styles.map((r) => r.textContent)).toEqual([
+      "OpenAI (Chat Completions)",
+      "OpenAI (Responses)",
+      "Claude (Messages)",
+    ]);
+    expect(styles[0]?.getAttribute("aria-checked")).toBe("true");
+    await click(within(add).getByRole("radio", { name: "OpenAI (Responses)" }));
+    expect(within(add).getByRole("radio", { name: "OpenAI (Responses)" }).getAttribute("aria-checked")).toBe("true");
+    await type(within(add).getByLabelText("Endereço"), "https://gw.example/openai/v1");
+    await type(within(add).getByLabelText("Chave de API"), "gw-key-1234567");
+    await click(within(add).getByRole("button", { name: "Buscar modelos" }));
+    expect(state.calls.find((c) => c.method === "agents.endpointModels")?.args[1]).toMatchObject({
+      style: "openai-responses",
+      baseURL: "https://gw.example/openai/v1",
+    });
+  });
+
   test("laid out as a dialog: its fields in the body, Buscar modelos on the label's line, Cancelar then the save in the footer", async () => {
     const { add } = await openForm();
     const body = add.querySelector(".ac-dialog__body") as HTMLElement;

@@ -1,11 +1,12 @@
 import { createAnthropicProvider } from "./anthropic";
 import { parseCustomModel } from "./catalog";
+import { createOpenAIProvider } from "./openai";
 import { createOpenRouterProvider } from "./openrouter";
 import { type Endpoint, type ModelProvider, type ModelResult, ProviderError } from "./types";
 
 /** The APIs a workspace's own endpoint may speak (a gateway, Ollama, vLLM, LM Studio, LiteLLM…). */
 export type EndpointStyle = Endpoint["style"];
-export const ENDPOINT_STYLES = ["openai", "anthropic"] as const satisfies readonly EndpointStyle[];
+export const ENDPOINT_STYLES = ["openai", "openai-responses", "anthropic"] as const satisfies readonly EndpointStyle[];
 
 const LIST_TIMEOUT_MS = 10_000;
 const LIST_MAX_BYTES = 2_000_000;
@@ -152,8 +153,9 @@ const readsImages = (model: string) => /claude/i.test(model);
 
 /**
  * The adapter for every workspace endpoint, registered once as `custom`: each call names its endpoint
- * (`StreamOptions.endpoint`) and goes through the catalog's own adapters with that address, Anthropic's in its
- * compatible mode or the Chat Completions one OpenRouter uses. The endpoint's model id is sent, the full
+ * (`StreamOptions.endpoint`) and goes through the catalog's own adapters with that address: Anthropic's in its
+ * compatible mode, OpenAI's Responses one (`openai-responses`: the models that take tools with reasoning only there,
+ * ADR 0177), or the Chat Completions one OpenRouter uses. The endpoint's model id is sent, the full
  * `custom:` id comes back (so a catalog id it may share is never priced at the catalog's prices), and a cost the
  * server reports is ignored: the admin's prices count. `version`: this server's, in the User-Agent an endpoint that
  * asks for one gets (`endpointHeaders`).
@@ -179,11 +181,13 @@ export function createCustomProvider(
               fetch: http,
               maxRetries: options.maxRetries,
             })
-          : createOpenRouterProvider({
-              compatible: { id: "custom", baseURL: endpoint.baseURL },
-              fetch: http,
-              maxRetries: options.maxRetries,
-            });
+          : endpoint.style === "openai-responses"
+            ? createOpenAIProvider({ baseURL: endpoint.baseURL, fetch: http, maxRetries: options.maxRetries })
+            : createOpenRouterProvider({
+                compatible: { id: "custom", baseURL: endpoint.baseURL },
+                fetch: http,
+                maxRetries: options.maxRetries,
+              });
       const { costNanoUsd: _reported, ...result } = await inner.stream(
         { ...request, model: parsed.model },
         streamOptions,

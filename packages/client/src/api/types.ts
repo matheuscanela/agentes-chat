@@ -624,8 +624,8 @@ export interface Credential {
   revokedAt: string | null;
 }
 
-/** The API a workspace's own endpoint speaks: OpenAI's Chat Completions or Anthropic's Messages. */
-export type EndpointStyle = "openai" | "anthropic";
+/** The API a workspace's own endpoint speaks: OpenAI's Chat Completions or Responses, or Anthropic's Messages. */
+export type EndpointStyle = "openai" | "openai-responses" | "anthropic";
 
 /** Per million tokens, in US dollars. A cache price left out is the input's. */
 export interface EndpointPrices {
