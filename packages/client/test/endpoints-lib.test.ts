@@ -3,8 +3,10 @@ import type { Credential, Model } from "../src/api/types";
 import {
   checksInOrder,
   draftOfEndpoint,
+  ENDPOINT_STYLES,
   emptyEndpointDraft,
   endpointAddressLooksValid,
+  endpointBaseExample,
   endpointModelsOf,
   endpointReady,
   modelsShown,
@@ -38,6 +40,18 @@ describe("the endpoint form", () => {
       { id: "b", check: "ok" },
     ]);
     expect(withChecks(bare, [{ model: "b", check: "ok" }])).toEqual({ id: "k" });
+  });
+
+  test("three APIs to pick from; the Responses one is addressed like Chat Completions, a saved one comes back as it was", () => {
+    expect(ENDPOINT_STYLES).toEqual(["openai", "openai-responses", "anthropic"]);
+    expect(endpointBaseExample("openai-responses")).toBe(endpointBaseExample("openai"));
+    expect(endpointBaseExample("anthropic")).toBe("https://api.example.com/anthropic");
+    const d = draftOfEndpoint("GW", {
+      style: "openai-responses",
+      baseURL: "https://gw.example/openai/v1",
+      models: [{ id: "gpt-x" }],
+    });
+    expect(d.style).toBe("openai-responses");
   });
 
   test("a model taken off leaves the others as they were", () => {
