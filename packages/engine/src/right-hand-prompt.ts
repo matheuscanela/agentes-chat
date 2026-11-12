@@ -290,7 +290,9 @@ export async function rightHandPrompt(
       named.length
         ? `${input.inDm ? "Channels they see" : "Public channels"}: ${named.map((c) => `#${c.name} (${seats.filter((s) => s.channelId === c.id).length} members)`).join(", ")}.`
         : "",
-      apps.length && input.inDm ? `Apps connected: ${apps.map((a) => a.label).join(", ")}.` : "",
+      apps.length && input.inDm
+        ? `Apps connected: ${apps.map((a) => a.label).join(", ")}. Their tools are the team's agents', never yours (you have no access page to switch them on): when someone asks you to use one (read errors, issues, emails), say you can't and offer an agent that has it, or to give one the app (propose_instruction_change).`
+        : "",
     ]
       .filter(Boolean)
       .join("\n"),

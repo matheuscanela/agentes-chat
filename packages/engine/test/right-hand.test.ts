@@ -269,6 +269,8 @@ test("called in a channel, its prompt holds no private channel, money or app: ot
   expect(dm).toContain("#diretoria");
   expect(dm).toMatch(/@dev \(Dev\)[^\n]*budget US\$/);
   expect(dm).toContain("Apps connected: Linear.");
+  // Its tools are the team's agents', never its own: it says so instead of asking to be given them.
+  expect(dm).toContain("Their tools are the team's agents', never yours");
   const channel = await prompt(false);
   expect(channel).not.toContain("diretoria");
   expect(channel).not.toContain("US$");
