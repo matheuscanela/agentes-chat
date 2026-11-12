@@ -594,7 +594,7 @@ describe("prompt cache: a stable prefix whatever tools load", () => {
           model: "deepseek-v4-pro",
           system: [{ text: "agent", cache: true }],
           messages: [
-            { role: "user", content: "oi" },
+            { role: "user", content: [{ type: "text", text: "oi", cache: true }] },
             { role: "assistant", content: [{ type: "tool_use", id: "t1", name: "read_skill_file", input: {} }] },
             {
               role: "user",
@@ -621,6 +621,9 @@ describe("prompt cache: a stable prefix whatever tools load", () => {
       ["z", undefined],
     ]);
     expect(body.system).toEqual([{ type: "text", text: "agent", cache_control: { type: "ephemeral" } }]);
+    // The history's breakpoint is a 5-minute one too: Anthropic refuses a 1-hour one after the system's 5-minute one.
+    expect(JSON.stringify(body.messages)).toContain('"cache_control":{"type":"ephemeral"}');
+    expect(JSON.stringify(body)).not.toContain('"ttl"');
     // A tool result's image goes as a note: these endpoints aren't trusted to take images.
     expect(JSON.stringify(body.messages)).not.toContain('"image"');
     expect(JSON.stringify(body.messages)).toContain(
