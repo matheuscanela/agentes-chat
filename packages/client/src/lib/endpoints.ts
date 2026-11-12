@@ -6,7 +6,7 @@ import type { EndpointCheck, EndpointCheckResult, EndpointModel, EndpointStyle }
  */
 export const CUSTOM_PROVIDER = "custom";
 
-export const ENDPOINT_STYLES: readonly EndpointStyle[] = ["openai", "anthropic"];
+export const ENDPOINT_STYLES: readonly EndpointStyle[] = ["openai", "openai-responses", "anthropic"];
 
 /** One model of the form: on or off, with its prices as typed (US dollars per million tokens). */
 export interface EndpointModelDraft {

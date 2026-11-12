@@ -212,10 +212,11 @@ export interface StreamOptions {
 
 /**
  * A workspace's own model endpoint (ADR 0146). `baseURL` is what that API's SDK takes: `https://host/v1` for Chat
- * Completions (`openai`), `https://host/anthropic` (no `/v1`) for Anthropic Messages.
+ * Completions (`openai`) or the Responses API (`openai-responses`), `https://host/anthropic` (no `/v1`) for Anthropic
+ * Messages.
  */
 export interface Endpoint {
-  style: "openai" | "anthropic";
+  style: "openai" | "openai-responses" | "anthropic";
   baseURL: string;
 }
 
