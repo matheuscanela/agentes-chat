@@ -29,7 +29,7 @@ import { organizationMembers, organizations } from "./tenancy";
  */
 /** A workspace's own model endpoint as its credential keeps it (ADR 0146). Prices in nano-USD per token. */
 export interface StoredEndpoint {
-  style: "openai" | "anthropic";
+  style: "openai" | "openai-responses" | "anthropic";
   baseURL: string;
   models: {
     id: string;
