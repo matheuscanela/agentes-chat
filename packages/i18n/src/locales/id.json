@@ -4955,6 +4955,7 @@
         },
         "speedText": "Menjawab lebih cepat dalam percakapan dan menghabiskan paket 2,5× lebih cepat. Rutinitas dan tugas panjang tetap standar.",
         "modelLine": {
+          "fable": "Lebih mampu lagi dari Opus. Paling cepat menghabiskan paket.",
           "opus": "Paling mampu. Menghabiskan paket lebih cepat.",
           "sonnet": "Seimbang. Cocok untuk hampir semua hal.",
           "haiku": "Cepat dan ringan. Untuk tugas sederhana."

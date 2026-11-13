@@ -12552,6 +12552,9 @@
   "agentPage.work.brain.speedText": {
     "value": "Answers faster in conversations and uses the plan 2.5× as fast. Routines and long tasks stay at standard speed."
   },
+  "agentPage.work.brain.modelLine.fable": {
+    "value": "Even more capable than Opus. Uses up the plan fastest."
+  },
   "agentPage.work.brain.modelLine.opus": {
     "value": "The most capable. Uses up the plan faster."
   },

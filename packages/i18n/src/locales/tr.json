@@ -5094,6 +5094,7 @@
         },
         "speedText": "Sohbetlerde daha hızlı yanıt verir ve planı 2,5× daha hızlı tüketir. Rutinler ve uzun görevler standart hızda kalır.",
         "modelLine": {
+          "fable": "Opus'tan da yetenekli. Planı en hızlı tüketen.",
           "opus": "En yetenekli olanı. Planı daha hızlı tüketir.",
           "sonnet": "Dengeli. Neredeyse her şey için iyi.",
           "haiku": "Hızlı ve hafif. Basit görevler için."

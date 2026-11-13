@@ -5275,6 +5275,7 @@
         },
         "speedText": "Répond plus vite dans les conversations et consomme l'abonnement 2,5× plus vite. Les routines et les tâches longues restent en standard.",
         "modelLine": {
+          "fable": "Encore plus performant qu'Opus. Consomme le forfait le plus vite.",
           "opus": "Le plus performant. Consomme l'abonnement plus vite.",
           "sonnet": "Équilibré. Convient à presque tout.",
           "haiku": "Rapide et léger. Pour les tâches simples."

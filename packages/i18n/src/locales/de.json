@@ -5111,6 +5111,7 @@
         },
         "speedText": "Antwortet in Unterhaltungen schneller und verbraucht das Abo 2,5× so schnell. Routinen und lange Aufgaben bleiben beim Standard.",
         "modelLine": {
+          "fable": "Noch leistungsstärker als Opus. Verbraucht das Abo am schnellsten.",
           "opus": "Das leistungsstärkste. Verbraucht das Abo schneller.",
           "sonnet": "Ausgewogen. Gut für fast alles.",
           "haiku": "Schnell und leicht. Für einfache Aufgaben."

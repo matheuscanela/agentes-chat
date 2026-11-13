@@ -5277,6 +5277,7 @@
         },
         "speedText": "Risponde più in fretta nelle conversazioni e consuma il piano 2,5× più velocemente. Routine e attività lunghe restano allo standard.",
         "modelLine": {
+          "fable": "Ancora più capace di Opus. Consuma il piano più in fretta di tutti.",
           "opus": "Il più capace. Consuma il piano più in fretta.",
           "sonnet": "Equilibrato. Va bene per quasi tutto.",
           "haiku": "Veloce e leggero. Per le attività semplici."

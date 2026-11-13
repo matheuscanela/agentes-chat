@@ -5399,6 +5399,7 @@ export const en = {
         speedText:
           "Answers faster in conversations and uses the plan 2.5× as fast. Routines and long tasks stay at standard speed.",
         modelLine: {
+          fable: "Even more capable than Opus. Uses up the plan fastest.",
           opus: "The most capable. Uses up the plan faster.",
           sonnet: "Balanced. Good for almost everything.",
           haiku: "Fast and light. For simple tasks.",

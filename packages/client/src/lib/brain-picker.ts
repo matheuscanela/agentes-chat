@@ -104,6 +104,8 @@ export function brainModelLine(
   cursorPlanSays = false,
 ): string | undefined {
   if (!plan && kind === "claude_code" && isClaudeAlias(m.value)) return t(`agentPage.work.brain.modelLine.${m.value}`);
+  if (!plan && kind === "claude_code" && /^claude-fable-/.test(m.value))
+    return t("agentPage.work.brain.modelLine.fable");
   if (cursorPlanSays) return t(m.inPlan ? "brain.cursorModel.inPlan" : "brain.cursorModel.apiPrice");
   const parts = [m.free ? t("brain.free") : undefined, m.tag ? t(`brain.modelTag.${m.tag}`) : undefined];
   return parts.filter(Boolean).join(" · ") || undefined;

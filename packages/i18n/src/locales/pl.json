@@ -5446,6 +5446,7 @@
         },
         "speedText": "Odpowiada szybciej w rozmowach i zużywa plan 2,5× szybciej. Rutyny i długie zadania zostają przy standardowej szybkości.",
         "modelLine": {
+          "fable": "Jeszcze bardziej zdolny niż Opus. Najszybciej zużywa plan.",
           "opus": "Najbardziej zaawansowany. Szybciej zużywa plan.",
           "sonnet": "Zrównoważony. Dobry prawie do wszystkiego.",
           "haiku": "Szybki i lekki. Do prostych zadań."
