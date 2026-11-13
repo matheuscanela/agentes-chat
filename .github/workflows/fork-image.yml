@@ -28,7 +28,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PATCH_BASE: v0.1.1 # the upstream tag the patches on this branch were written against
+  PATCH_BASE: 2628b0c0dbb0bef9e66212c554c69cb6512426a7 # the upstream commit this branch is rebased on: the patches are what comes after it
 
 jobs:
   image:
