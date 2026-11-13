@@ -245,7 +245,23 @@ export const MODEL_CATALOG: Record<string, ModelInfo> = {
   },
   // Gemini (Interactions API), Standard tier, from ai.google.dev/gemini-api/docs/pricing (2026-10-27). Thinking is
   // billed as output. Caching is implicit, with no write charge, so a cache write costs the input rate (none is ever
-  // reported). Argon and 3.8 Flash cost half until the day in `intro`.
+  // reported). Carbon, Argon and 3.8 Flash cost half until the day in `intro`. Carbon (2026-11-10) and Hydrogen
+  // (2026-11-12) from the same page on 2026-11-13: no tier, so "Automático" keeps choosing as before; people pick them.
+  "gemini-4-carbon": {
+    provider: "gemini",
+    label: "Gemini 4 Carbon",
+    prices: { input: 4000, output: 20000, cacheRead: 200, cacheWrite: 4000 },
+    intro: { until: "2026-12-01", prices: { input: 2000, output: 10000, cacheRead: 100, cacheWrite: 2000 } },
+    contextWindow: 1_048_576,
+    serverSideFallback: false,
+  },
+  "gemini-4-hydrogen": {
+    provider: "gemini",
+    label: "Gemini 4 Hydrogen",
+    prices: { input: 1500, output: 7500, cacheRead: 75, cacheWrite: 1500 },
+    contextWindow: 1_048_576,
+    serverSideFallback: false,
+  },
   "gemini-4-argon": {
     provider: "gemini",
     label: "Gemini 4 Argon",

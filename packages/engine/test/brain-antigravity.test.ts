@@ -127,6 +127,14 @@ test("Quem pensa: Gemini where its runner and CLI are, its models as the CLI lis
   expect(option(machine({ executors: { detectedAt: "x" } }))).toMatchObject({ reason: "not_installed" });
   expect(option(machine({ executors: {} }))).toMatchObject({ reason: "not_reported" });
   expect(antigravityModels([]).map((m) => m.value)).toEqual(ANTIGRAVITY_MODELS.map((m) => m.id));
+  // Hydrogen and Carbon (Ultra's), at any level, xhigh included, are their catalog models.
+  expect(
+    antigravityModels([
+      { id: "gemini-4-hydrogen-xhigh", label: "Gemini 4 Hydrogen (XHigh)" },
+      { id: "gemini-4-carbon-high", label: "Gemini 4 Carbon (High)" },
+    ]).map((m) => m.modelId),
+  ).toEqual(["gemini-4-hydrogen", "gemini-4-carbon"]);
+  expect(antigravityModels([]).find((m) => m.value === "gemini-4-hydrogen-low")?.modelId).toBe("gemini-4-hydrogen");
   expect(defaultBrainModel("antigravity")).toBeNull();
   expect(isBrainKind("antigravity") && isComputerBrain("antigravity")).toBe(true);
   expect([BRAIN_NAMES.antigravity, BRAIN_PLAN_NAMES.antigravity, defaultAccountLabel("antigravity")]).toEqual([
