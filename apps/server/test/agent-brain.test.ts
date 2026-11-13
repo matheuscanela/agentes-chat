@@ -119,6 +119,7 @@ test("agent brain: defaults, who may, letting others talk to a plan, what the co
     ["antigravity", false, "no_computer"],
   ]);
   expect(fresh.options.find((o) => o.kind === "claude_code")?.models.map((m) => m.value)).toEqual([
+    "claude-fable-5-2",
     "opus",
     "sonnet",
     "haiku",

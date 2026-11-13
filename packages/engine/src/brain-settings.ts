@@ -209,10 +209,13 @@ export const antigravityModels = (listed: readonly { id: string; label?: string 
 
 /**
  * Claude Code's aliases (`--model opus|sonnet|haiku`), mapped to today's ids in the catalog. Each is named by its
- * catalog row without the maker ("Opus 5.5"), so moving an alias to a new id renames it with no copy change.
+ * catalog row without the maker ("Opus 5.5"), so moving an alias to a new id renames it with no copy change. Fable goes
+ * by its full id, so the turn runs that exact model whatever Claude Code's own `fable` alias points at; "Automático"
+ * never picks it.
  */
 export const CLAUDE_CODE_MODELS: readonly BrainModelOption[] = (
   [
+    { value: "claude-fable-5-2", modelId: "claude-fable-5-2" },
     { value: "opus", modelId: "claude-opus-5-5" },
     { value: "sonnet", modelId: "claude-sonnet-5-5", recommended: true },
     { value: "haiku", modelId: "claude-haiku-5-5" },
