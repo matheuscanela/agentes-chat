@@ -28,7 +28,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PATCH_BASE: 5f69a24e1c96cc8ba28e3ff4ac80b985aee7b7a6 # the upstream commit this branch is rebased on: the patches are what comes after it
+  PATCH_BASE: e09150f37baec8651dae68b6cd32bb78d9f511b9 # the upstream commit this branch is rebased on: the patches are what comes after it
 
 jobs:
   image:
